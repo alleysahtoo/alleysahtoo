@@ -9,11 +9,11 @@
         .card { background: #ffffff; padding: 30px; border-radius: 20px; border: 2px solid #000; box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
         h2 { text-align: center; border-bottom: 3px solid #000; padding-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; margin-top: 0; }
         label { font-weight: bold; display: block; margin-top: 15px; }
-        input[type="text"], input[type="tel"], select { width: 100%; padding: 12px; margin-top: 5px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        input[type="text"], input[type="tel"], input[type="number"], select { width: 100%; padding: 12px; margin-top: 5px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
         input:focus { border-color: #000; outline: none; }
         .menu-section { margin-top: 20px; background: #f9f9f9; padding: 15px; border-radius: 10px; }
         .item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
-        .qty { width: 70px !important; text-align: center; border: 2px solid #000 !important; font-weight: bold; }
+        .qty { width: 80px !important; text-align: center; border: 2px solid #000 !important; font-weight: bold; }
         .total-box { background: #000; color: #fff; padding: 20px; border-radius: 12px; text-align: center; margin-top: 25px; font-size: 24px; font-weight: 800; }
         .qr-section { text-align: center; margin: 30px 0; border: 1px dashed #000; padding: 15px; border-radius: 10px; }
         .qr-img { width: 100%; max-width: 220px; border: 2px solid #000; margin-top: 10px; }
@@ -27,7 +27,7 @@
 <div class="card">
     <h2>alleysahtoo</h2>
     
-    <!-- Email Backup via FormSubmit -->
+    <!-- Replace your-email@example.com with your real email to receive backups -->
     <form id="orderForm" action="https://formsubmit.co" method="POST">
         <label>Customer Name</label>
         <input type="text" name="Name" id="name" placeholder="Enter your name" required>
@@ -53,8 +53,7 @@
 
         <div class="qr-section">
             <p style="margin:0;"><b>Step 1: Pay via PayNow QR</b></p>
-            <>
-            <img src="[url=https://postimg.cc/Dmw0bCmH][img]https://i.postimg.cc/Dmw0bCmH/5f4820d0-9bdb-49e8-9341-0fe6ab58e261.jpg[/img][/url]" class="qr-img" alt="PayNow QR Code">
+            <img src="https://i.postimg.cc" class="qr-img" alt="PayNow QR Code">
             <p style="font-size: 11px; margin-top: 8px;">Screenshot your successful payment.</p>
         </div>
 
@@ -65,8 +64,8 @@
 </div>
 
 <script>
-    const inputs = document.querySelectorAll('.qty');
-    inputs.forEach(input => input.addEventListener('input', calculate));
+    const qtyInputs = document.querySelectorAll('.qty');
+    qtyInputs.forEach(input => input.addEventListener('input', calculate));
 
     function calculate() {
         const q1 = parseInt(document.getElementById('qty1').value) || 0;
@@ -74,12 +73,14 @@
         const q3 = parseInt(document.getElementById('qty3').value) || 0;
         
         const subtotal = (q1 + q2 + q3) * 6;
-        const deliveryFee = (document.getElementById('method').value === 'Delivery' && subtotal > 0) ? 10 : 0;
+        const method = document.getElementById('method').value;
+        const deliveryFee = (method === 'Delivery' && subtotal > 0) ? 10 : 0;
         const total = subtotal + deliveryFee;
 
         document.getElementById('totalDisplay').innerText = total.toFixed(2);
         document.getElementById('hiddenTotal').value = total.toFixed(2);
-        return {q1, q2, q3, total, method: document.getElementById('method').value};
+        
+        return { q1, q2, q3, total, method };
     }
 
     function submitToWhatsApp() {
@@ -87,40 +88,37 @@
         const name = document.getElementById('name').value;
         const phone = document.getElementById('phone').value;
 
+        // Validation
         if (!name || !phone || data.total === 0) {
-            alert("Please provide your name, contact, and at least 1 item!");
+            alert("Please fill in your name, contact, and pick at least one item!");
             return;
         }
 
-        // Build the text message
-        let orderList = "";
-        if(data.q1 > 0) orderList += `- Beef Shoryu x${data.q1}%0A`;
-        if(data.q2 > 0) orderList += `- Chicken Paitan x${data.q2}%0A`;
-        if(data.q3 > 0) orderList += `- Prawn Noodle x${data.q3}%0A`;
+        // Build WhatsApp Message
+        let orderItems = "";
+        if(data.q1 > 0) orderItems += `- Beef Shoryu x${data.q1}\n`;
+        if(data.q2 > 0) orderItems += `- Chicken Paitan x${data.q2}\n`;
+        if(data.q3 > 0) orderItems += `- Prawn Noodle x${data.q3}\n`;
 
-        const message = `*NEW ORDER - alleysahtoo*%0A%0A` +
-                        `*Customer:* ${name}%0A` +
-                        `*Phone:* ${phone}%0A%0A` +
-                        `*Items:*%0A${orderList}%0A` +
-                        `*Method:* ${data.method}%0A` +
-                        `*Total Amount: $${data.total.toFixed(2)}*%0A%0A` +
-                        `_I've completed the PayNow transfer. Sending screenshot now!_`;
+        const textMessage = `*NEW ORDER - alleysahtoo*\n\n` +
+                            `*Customer:* ${name}\n` +
+                            `*Phone:* ${phone}\n\n` +
+                            `*Items:*\n${orderItems}\n` +
+                            `*Method:* ${data.method}\n` +
+                            `*Total Payable: $${data.total.toFixed(2)}*\n\n` +
+                            `_I've paid via PayNow. Sending screenshot now!_`;
 
-      function handleSubmit(event) {
-    // 1. Prevent the page from refreshing immediately
-    // event.preventDefault(); 
+        // WhatsApp Redirect
+        const waNumber = "6588100809";
+        const waUrl = `https://wa.me{waNumber}?text=${encodeURIComponent(textMessage)}`;
 
-    // 2. Format the WhatsApp URL
-    const phoneNumber = "6588100809"; // International format, no '+' or spaces
-    const customMessage = "Hello Mel, I've just submitted my order!";
-    
-    // Use encodeURIComponent to handle spaces and special characters safely
-    const waUrl = `https://wa.me{phoneNumber}?text=${encodeURIComponent(customMessage)}`;
+        // 1. Submit form for email backup
+        document.getElementById('orderForm').submit();
 
-    // 3. Trigger the email backup (submits the form)
-    document.getElementById('orderForm').submit();
+        // 2. Open WhatsApp
+        window.open(waUrl, '_blank');
+    }
+</script>
 
-    // 4. Open WhatsApp in a new tab
-    window.open(waUrl, '_blank');
-}
-
+</body>
+</html>
