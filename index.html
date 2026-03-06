@@ -173,7 +173,7 @@
 <h1>AlleySahtoo</h1>
 <h2>Order Form</h2>
 
-<!-- Removed form action, since we will open Gmail directly -->
+<!-- Removed form action, since we will open WhatsApp directly -->
 
 <div id="orderContainer">
   <label for="name">Customer Name</label>
@@ -227,7 +227,7 @@
 
   <button type="button" onclick="sendOrder()">Confirm & Send</button>
   <div class="footer-note">
-    Clicking will open Gmail to send your order details.
+    Clicking will open WhatsApp to send your order details.
   </div>
 </div>
 </form>
@@ -291,31 +291,27 @@
     if (qChicken > 0) items += `- Chicken Paitan x${qChicken}\n`;
     if (qPrawn > 0) items += `- Prawn Noodle x${qPrawn}\n`;
 
-    // Compose email body
     const addressDetails = method === 'Delivery' ? 
       `Delivery Address: ${document.getElementById('addressLine').value.trim()}, Unit: ${document.getElementById('unitNumber').value.trim()}, Postal: ${document.getElementById('postalCode').value.trim()}` :
       'Pickup';
 
-    const messageBody = 
-      `*NEW ORDER - AlleySahtoo*\n\n` +
-      `*Customer:* ${name}\n` +
-      `*Contact:* ${contact}\n` +
-      (method === 'Delivery' ? `*Delivery Address:* ${addressDetails}\n` : '') +
-      `*Items:*\n${items}\n` +
-      `*Method:* ${method}\n` +
-      `*Total:* $${total.toFixed(2)}\n\n` +
-      `_I've paid via QR code, sending screenshot!_`;
+    const message = `*NEW ORDER - AlleySahtoo*\n\n` +
+                    `*Customer:* ${name}\n` +
+                    `*Contact:* ${contact}\n` +
+                    (method === 'Delivery' ? `*Delivery Address:* ${addressDetails}\n` : '') +
+                    `*Items:*\n${items}\n` +
+                    `*Method:* ${method}\n` +
+                    `*Total:* $${total.toFixed(2)}\n\n` +
+                    `_I've paid via QR code, sending screenshot!_`;
 
-    const email = 'alleysahtoo@gmail.com'; // Your email
-    const subject = encodeURIComponent('New Order from AlleySahtoo');
-    const body = encodeURIComponent(messageBody);
-    const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`;
+    const waNumber = '6588100809'; // Your WhatsApp number
+    const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
 
-    // Open Gmail compose window
-    window.location.href = mailtoLink;
+    // Open WhatsApp chat with pre-filled message
+    window.open(waUrl, '_blank');
   }
 
-  // Initialize address section based on default selection
+  // Initialize address section based on default
   window.onload = () => {
     toggleAddressSection();
   };
