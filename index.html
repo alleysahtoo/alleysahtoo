@@ -54,7 +54,7 @@
         <div class="qr-section">
             <p style="margin:0;"><b>Step 1: Pay via PayNow QR</b></p>
             <>
-            <img src="https://i.postimg.cc/tRhxwwbq/5f4820d0-9bdb-49e8-9341-0fe6ab58e261.jpg" class="qr-img" alt="PayNow QR Code">
+            <img src="[url=https://postimg.cc/Dmw0bCmH][img]https://i.postimg.cc/Dmw0bCmH/5f4820d0-9bdb-49e8-9341-0fe6ab58e261.jpg[/img][/url]" class="qr-img" alt="PayNow QR Code">
             <p style="font-size: 11px; margin-top: 8px;">Screenshot your successful payment.</p>
         </div>
 
@@ -106,16 +106,21 @@
                         `*Total Amount: $${data.total.toFixed(2)}*%0A%0A` +
                         `_I've completed the PayNow transfer. Sending screenshot now!_`;
 
-        // Redirect to WhatsApp (Mel: +6588100809)
-        const waUrl = `https://wa.me{message}`;
-        
-        // Also trigger the email backup
-        document.getElementById('orderForm').submit();
-        
-        window.open(waUrl, '_blank');
-    }
-</script>
+      function handleSubmit(event) {
+    // 1. Prevent the page from refreshing immediately
+    // event.preventDefault(); 
 
-</body>
-</html>
+    // 2. Format the WhatsApp URL
+    const phoneNumber = "6588100809"; // International format, no '+' or spaces
+    const customMessage = "Hello Mel, I've just submitted my order!";
+    
+    // Use encodeURIComponent to handle spaces and special characters safely
+    const waUrl = `https://wa.me{phoneNumber}?text=${encodeURIComponent(customMessage)}`;
+
+    // 3. Trigger the email backup (submits the form)
+    document.getElementById('orderForm').submit();
+
+    // 4. Open WhatsApp in a new tab
+    window.open(waUrl, '_blank');
+}
 
