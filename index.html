@@ -173,13 +173,14 @@
 <h1>AlleySahtoo</h1>
 <h2>Order Form</h2>
 
-<form id="orderForm" action="https://formsubmit.co/alleysahtoo@gmail.com" method="POST" target="_blank">
+<!-- Removed form action, since we will open Gmail directly -->
 
+<div id="orderContainer">
   <label for="name">Customer Name</label>
-  <input type="text" id="name" name="Name" placeholder="Enter your name" required>
+  <input type="text" id="name" placeholder="Enter your name" />
 
   <label for="contact">Contact Number</label>
-  <input type="tel" id="contact" name="Contact" placeholder="e.g. 91234567" required>
+  <input type="tel" id="contact" placeholder="e.g. 91234567" />
 
   <div class="menu">
     <p style="margin-top:0; font-weight:bold;">Items ($6 each)</p>
@@ -203,7 +204,6 @@
     <option value="Delivery">Delivery (+$10)</option>
   </select>
   
-  <!-- Address section appears only if Delivery is selected -->
   <div id="addressSection">
     <label for="postalCode">Postal Code</label>
     <input type="text" id="postalCode" placeholder="Search via postal code" />
@@ -216,19 +216,20 @@
   </div>
 
   <div class="total" id="totalDisplay">Total: $0.00</div>
-  <input type="hidden" name="Total" id="totalHidden" />
+  <input type="hidden" id="totalHidden" />
 
-  <!-- QR code image for payment -->
+  <!-- QR code for payment -->
   <div class="payment-section">
     <p style="margin:0; font-weight:bold;">Step 1: Pay via QR Code</p>
     <img src="https://i.postimg.cc/Dmw0bCmH/5f4820d0-9bdb-49e8-9341-0fe6ab58e261.jpg" alt="PayNow QR" class="qr-code" />
     <p style="font-size:11px;">Screenshot after payment.</p>
   </div>
 
-  <button type="button" onclick="checkout()">Confirm & Send</button>
+  <button type="button" onclick="sendOrder()">Confirm & Send</button>
   <div class="footer-note">
-    Clicking will open WhatsApp to send your order details.
+    Clicking will open Gmail to send your order details.
   </div>
+</div>
 </form>
 </div>
 
@@ -262,7 +263,7 @@
     return { qBeef, qChicken, qPrawn, total, method };
   }
 
-  function checkout() {
+  function sendOrder() {
     const { qBeef, qChicken, qPrawn, total, method } = calculateTotal();
 
     const name = document.getElementById('name').value.trim();
@@ -290,23 +291,28 @@
     if (qChicken > 0) items += `- Chicken Paitan x${qChicken}\n`;
     if (qPrawn > 0) items += `- Prawn Noodle x${qPrawn}\n`;
 
-    const message = `*NEW ORDER - AlleySahtoo*\n\n` +
-                    `*Customer:* ${name}\n` +
-                    `*Contact:* ${contact}\n` +
-                    (method === 'Delivery' ? `*Delivery Address:* ${document.getElementById('addressLine').value.trim()}, Unit: ${document.getElementById('unitNumber').value.trim()}, Postal: ${document.getElementById('postalCode').value.trim()}\n` : '') +
-                    `*Items:*\n${items}\n` +
-                    `*Method:* ${method}\n` +
-                    `*Total:* $${total.toFixed(2)}\n\n` +
-                    `_I've paid via QR code, sending screenshot!_`;
+    // Compose email body
+    const addressDetails = method === 'Delivery' ? 
+      `Delivery Address: ${document.getElementById('addressLine').value.trim()}, Unit: ${document.getElementById('unitNumber').value.trim()}, Postal: ${document.getElementById('postalCode').value.trim()}` :
+      'Pickup';
 
-    const waNumber = '6588100809'; // Singapore number without '+'
-    const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+    const messageBody = 
+      `*NEW ORDER - AlleySahtoo*\n\n` +
+      `*Customer:* ${name}\n` +
+      `*Contact:* ${contact}\n` +
+      (method === 'Delivery' ? `*Delivery Address:* ${addressDetails}\n` : '') +
+      `*Items:*\n${items}\n` +
+      `*Method:* ${method}\n` +
+      `*Total:* $${total.toFixed(2)}\n\n` +
+      `_I've paid via QR code, sending screenshot!_`;
 
-    // Submit email backup
-    document.getElementById('orderForm').submit();
+    const email = 'alleysahtoo@gmail.com'; // Your email
+    const subject = encodeURIComponent('New Order from AlleySahtoo');
+    const body = encodeURIComponent(messageBody);
+    const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`;
 
-    // Open WhatsApp
-    window.open(waUrl, '_blank');
+    // Open Gmail compose window
+    window.location.href = mailtoLink;
   }
 
   // Initialize address section based on default selection
