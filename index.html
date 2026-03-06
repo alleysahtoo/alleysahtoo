@@ -173,8 +173,6 @@
 <h1>AlleySahtoo</h1>
 <h2>Order Form</h2>
 
-<!-- Removed form action, since we will open WhatsApp directly -->
-
 <div id="orderContainer">
   <label for="name">Customer Name</label>
   <input type="text" id="name" placeholder="Enter your name" />
@@ -227,7 +225,7 @@
 
   <button type="button" onclick="sendOrder()">Confirm & Send</button>
   <div class="footer-note">
-    Clicking will open WhatsApp to send your order details.
+    Please send your payment screenshot via WhatsApp to confirm your purchase.
   </div>
 </div>
 </form>
@@ -274,7 +272,7 @@
       return;
     }
 
-    // If delivery selected, make sure address info is filled
+    // If delivery selected, ensure address info is filled
     if (method === 'Delivery') {
       const postalCode = document.getElementById('postalCode').value.trim();
       const addressLine = document.getElementById('addressLine').value.trim();
@@ -299,10 +297,10 @@
                     `*Customer:* ${name}\n` +
                     `*Contact:* ${contact}\n` +
                     (method === 'Delivery' ? `*Delivery Address:* ${addressDetails}\n` : '') +
-                    `*Items:*\n${items}\n` +
-                    `*Method:* ${method}\n` +
+                    `*Items Purchased:* \n${items}\n` +
+                    `*Order Method:* ${method}\n` +
                     `*Total:* $${total.toFixed(2)}\n\n` +
-                    `_I've paid via QR code, sending screenshot!_`;
+                    `Please send your payment screenshot via WhatsApp to confirm your purchase.`;
 
     const waNumber = '6588100809'; // Your WhatsApp number
     const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
