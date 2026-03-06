@@ -1,13 +1,3 @@
-Great! To ensure the webpage is friendly and responsive for both Android and iOS users, I'll make sure it adapts well to different screen sizes and touch interactions. The current design is already quite responsive, but I will enhance it further with some improvements:
-
-1. Use responsive viewport meta tags.
-2. Make sure font sizes and elements scale well on small screens.
-3. Add touch-friendly button sizes.
-4. Ensure the layout flows smoothly on mobile devices.
-
-Here's the improved version:
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -147,6 +137,16 @@ Here's the improved version:
     margin-top: 10px;
   }
 
+  /* Address section styling */
+  #addressSection {
+    display: none;
+    margin-top: 15px;
+    padding: 15px;
+    background-color: #fffbe6;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+  }
+
   @media(max-width: 480px) {
     body {
       padding: 10px;
@@ -198,10 +198,22 @@ Here's the improved version:
   </div>
 
   <label for="delivery">Collection Method</label>
-  <select id="delivery" onchange="calculateTotal()">
+  <select id="delivery" onchange="toggleAddressSection()">
     <option value="Pickup">Self Collect (Free)</option>
     <option value="Delivery">Delivery (+$10)</option>
   </select>
+  
+  <!-- Address section appears only if Delivery is selected -->
+  <div id="addressSection">
+    <label for="postalCode">Postal Code</label>
+    <input type="text" id="postalCode" placeholder="Search via postal code" />
+
+    <label for="unitNumber">Unit Number</label>
+    <input type="text" id="unitNumber" placeholder="Enter unit number" />
+
+    <label for="addressLine">Address</label>
+    <input type="text" id="addressLine" placeholder="Enter delivery address" />
+  </div>
 
   <div class="total" id="totalDisplay">Total: $0.00</div>
   <input type="hidden" name="Total" id="totalHidden" />
@@ -223,6 +235,17 @@ Here's the improved version:
 <script>
   const qtyInputs = document.querySelectorAll('.qty');
   qtyInputs.forEach(input => input.addEventListener('input', calculateTotal));
+
+  function toggleAddressSection() {
+    const method = document.getElementById('delivery').value;
+    const addressSection = document.getElementById('addressSection');
+    if (method === 'Delivery') {
+      addressSection.style.display = 'block';
+    } else {
+      addressSection.style.display = 'none';
+    }
+    calculateTotal();
+  }
 
   function calculateTotal() {
     const qBeef = parseInt(document.getElementById('qtyBeef').value) || 0;
@@ -250,6 +273,18 @@ Here's the improved version:
       return;
     }
 
+    // If delivery selected, make sure address info is filled
+    if (method === 'Delivery') {
+      const postalCode = document.getElementById('postalCode').value.trim();
+      const addressLine = document.getElementById('addressLine').value.trim();
+      const unitNumber = document.getElementById('unitNumber').value.trim();
+
+      if (!postalCode || !addressLine || !unitNumber) {
+        alert('Please fill in all delivery address details.');
+        return;
+      }
+    }
+
     let items = '';
     if (qBeef > 0) items += `- Beef Shoryu x${qBeef}\n`;
     if (qChicken > 0) items += `- Chicken Paitan x${qChicken}\n`;
@@ -257,7 +292,8 @@ Here's the improved version:
 
     const message = `*NEW ORDER - AlleySahtoo*\n\n` +
                     `*Customer:* ${name}\n` +
-                    `*Contact:* ${contact}\n\n` +
+                    `*Contact:* ${contact}\n` +
+                    (method === 'Delivery' ? `*Delivery Address:* ${document.getElementById('addressLine').value.trim()}, Unit: ${document.getElementById('unitNumber').value.trim()}, Postal: ${document.getElementById('postalCode').value.trim()}\n` : '') +
                     `*Items:*\n${items}\n` +
                     `*Method:* ${method}\n` +
                     `*Total:* $${total.toFixed(2)}\n\n` +
@@ -272,17 +308,11 @@ Here's the improved version:
     // Open WhatsApp
     window.open(waUrl, '_blank');
   }
+
+  // Initialize address section based on default selection
+  window.onload = () => {
+    toggleAddressSection();
+  };
 </script>
 </body>
 </html>
-```
-
----
-
-### Summary of improvements:
-- The viewport meta tag now prevents user scaling for consistency on mobile.
-- Font sizes and button sizes are increased for better touch interaction.
-- The layout is responsive with media queries for smaller screens.
-- The QR code and total display adapt to smaller screens.
-
-This makes the webpage more user-friendly on both Android and iOS devices. Let me know if you want me to make any further adjustments!
